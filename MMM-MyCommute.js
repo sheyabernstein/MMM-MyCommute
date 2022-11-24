@@ -58,7 +58,7 @@ Module.register('MMM-MyCommute', {
 
   // Define required scripts.
   getScripts: function() {
-    return ["moment.js", this.file("node_modules/moment-duration-format/lib/moment-duration-format.js")];
+    return ["moment.js"];
   },
   
   // Define required styles.
@@ -281,12 +281,21 @@ Module.register('MMM-MyCommute', {
     return(svg);
   },
 
+  formatTimeString: function (time) {
+      var start = moment();
+      var end = start.clone();
+      end = end.add(Number(time), 's');
+      var diff = end.diff(start);
+
+      return moment.utc(diff).format(this.config.travelTimeFormat, {trim: this.config.travelTimeFormatTrim});
+  },
+
   formatTime: function(time, timeInTraffic) {
 
     var timeEl = document.createElement("span");
     timeEl.classList.add("travel-time");
     if (timeInTraffic != null) {
-      timeEl.innerHTML = moment.duration(Number(timeInTraffic), "seconds").format(this.config.travelTimeFormat, {trim: this.config.travelTimeFormatTrim});
+      timeEl.innerHTML = this.formatTimeString(timeInTraffic);
 
       var variance = timeInTraffic / time;
       if (this.config.colorCodeTravelTime) {            
@@ -300,7 +309,7 @@ Module.register('MMM-MyCommute', {
       }
 
     } else {
-      timeEl.innerHTML = moment.duration(Number(time), "seconds").format(this.config.travelTimeFormat, {trim: this.config.travelTimeFormatTrim});
+      timeEl.innerHTML = this.formatTimeString(time);
       timeEl.classList.add("status-good");
     }
 
